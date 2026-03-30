@@ -1,0 +1,50 @@
+🛠️ Horus SOC Tool — Installation & Usage Guide
+📥 1. Installation
+🐧 On Kali Linux
+1. Clone the repository
+git clone https://github.com/Omar-gamal188/horus-soc-tool.git
+cd horus-soc-tool
+2. Install pipx (recommended)
+sudo apt update
+sudo apt install pipx -y
+pipx ensurepath
+3. Install the tool
+pipx install .
+🚀 2. Run the Tool
+horus
+⚠️ Run with root privileges (Required for logs access)
+sudo $(which horus)
+🧠 Notes
+
+The tool reads logs using:
+
+journalctl
+
+It does NOT rely on:
+
+/var/log/auth.log ❌
+Works in real-time (live monitoring)
+🧪 3. Testing
+🟢 Method 1 — Same Machine (Simple Simulation)
+Step 1: Run the tool
+sudo $(which horus)
+Step 2: Open another terminal and start SSH
+sudo systemctl start ssh
+Step 3: Try login attempts
+ssh kali@localhost
+💀 Simulate attacks:
+❌ Enter wrong password → Failed login
+✅ Enter correct password → Successful login
+💥 Expected Output
+[FAILED ❌] Failed password for kali from ::1
+[SUCCESS ✅] Accepted password for kali from ::1
+🔥 What This Tool Does
+📡 Monitors authentication logs in real-time
+🔍 Detects login attempts (success & failure)
+🧠 Works across Linux & Windows
+⚡ Lightweight SOC-style monitoring tool
+🚀 Next Steps
+Add log parsing (structured data)
+Integrate Threat Intelligence (VirusTotal)
+Add AI-based analysis
+Send alerts (Telegram)
