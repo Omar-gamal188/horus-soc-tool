@@ -48,3 +48,7 @@ Add log parsing (structured data)
 Integrate Threat Intelligence (VirusTotal)
 Add AI-based analysis
 Send alerts (Telegram)
+
+
+
+hydra -l kali -P passwords.txt ssh://192.168.56.103 -t 4

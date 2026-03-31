@@ -2,6 +2,7 @@ import time
 import platform
 import subprocess
 from horus.parser import parse_log
+from horus.geoip import get_ip_info
 def banner():
     print("\033[1;32m")
 
@@ -26,22 +27,44 @@ def banner():
 
 
 # 🐧 Linux / Kali
+# 🐧 Linux / Kali
 def monitor_linux():
     print("[+] Monitoring Linux logs (journalctl)...\n")
 
     command = ["journalctl", "-f", "-n", "5"]
-
     process = subprocess.Popen(command, stdout=subprocess.PIPE, text=True)
+
+    failed_attempts = {}
 
     for line in process.stdout:
         data = parse_log(line)
 
-        if data:  # مهم جدًا
-            if data["status"] == "failed":
-                print(f"\033[1;31m[FAILED ❌]\033[0m User: {data['user']} | IP: {data['ip']}")
+        if data:
+            ip = data["ip"]
 
+            # تجاهل localhost
+            if ip == "::1" or ip.startswith("127."):
+                continue
+
+            # 🌍 GeoIP
+            geo = get_ip_info(ip)
+
+            # ❌ Failed
+            if data["status"] == "failed":
+                failed_attempts[ip] = failed_attempts.get(ip, 0) + 1
+
+                print(f"\033[1;31m[FAILED ❌]\033[0m User: {data['user']} | IP: {ip} | {geo['country']}, {geo['city']}")
+
+                # 🚨 Alert
+                if failed_attempts[ip] >= 5:
+                    print(f"\033[1;33m🚨 BRUTE FORCE DETECTED from {ip} ({geo['country']})\033[0m")
+
+            # ✅ Success
             elif data["status"] == "success":
-                print(f"\033[1;34m[SUCCESS ✅]\033[0m User: {data['user']} | IP: {data['ip']}")
+                print(f"\033[1;34m[SUCCESS ✅]\033[0m User: {data['user']} | IP: {ip} | {geo['country']}, {geo['city']}")
+
+                # reset counter
+                failed_attempts[ip] = 0
 # 🪟 Windows
 def monitor_windows():
     seen = set()
